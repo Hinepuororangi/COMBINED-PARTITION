@@ -2,494 +2,475 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Combined Partition OS</title>
-<script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#1C3A4A" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
 <script src="https://unpkg.com/@babel/standalone@7.24.7/babel.min.js"></script>
 <style>
-  :root {
-    --river: #1E3A3A;
-    --river-light: #2F5454;
-    --clay: #8C5A3C;
-    --stone: #F2EEE6;
-    --paper: #FBFAF7;
-    --ink: #22221F;
-    --muted: #6E6A61;
-    --verified: #2E6B4F;
-    --verified-bg: #E6F0EA;
-    --unverified: #A24A2F;
-    --unverified-bg: #F5E6DE;
-    --secondary: #7A6A50;
-    --secondary-bg: #EFE9DD;
-    --border: #E1DAC9;
+  :root{
+    --ink:#1C3A4A;         /* river-blue, primary dark */
+    --ink-light:#2E5266;
+    --parchment:#F6F2E8;   /* background */
+    --paper:#FFFFFF;
+    --ochre:#B8792B;       /* fill/border only, never text */
+    --ochre-dark:#5A3D14;  /* text-safe variant of ochre */
+    --green:#2F5D3A;       /* verified */
+    --green-bg:#E4EDE3;
+    --rust:#9C4A3A;        /* unverified / at-risk */
+    --rust-bg:#F3E3DF;
+    --amber-bg:#F5E9D3;
+    --line:#DFD6C2;
+    --text:#2A2A28;
+    --text-soft:#5C5A52;
   }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--paper);
-    color: var(--ink);
-    -webkit-font-smoothing: antialiased;
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--parchment); color:var(--text);
+    font-family:'Inter',sans-serif; -webkit-tap-highlight-color:transparent;
   }
-  .app { max-width: 520px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
-  header.top {
-    background: var(--river);
-    color: white;
-    padding: 20px 18px 16px;
-  }
-  header.top h1 { margin: 0; font-size: 19px; font-weight: 700; letter-spacing: 0.2px; }
-  header.top .sub { margin-top: 3px; font-size: 12.5px; opacity: 0.75; }
-  .content { flex: 1; padding: 16px; padding-bottom: 90px; }
-  nav.tabs {
-    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-    width: 100%; max-width: 520px; background: white;
-    border-top: 1px solid var(--border);
-    display: flex; padding: 6px 8px calc(6px + env(safe-area-inset-bottom));
-  }
-  nav.tabs button {
-    flex: 1; background: none; border: none; padding: 8px 4px;
-    font-size: 11.5px; color: var(--muted); font-weight: 600;
-    display: flex; flex-direction: column; align-items: center; gap: 3px;
-    cursor: pointer; border-radius: 10px;
-  }
-  nav.tabs button.active { color: var(--river); background: var(--stone); }
-  nav.tabs .icon { font-size: 18px; }
+  h1,h2,h3{font-family:'Fraunces',serif; margin:0; color:var(--ink);}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  #root{min-height:100vh; display:flex; flex-direction:column;}
 
-  .card {
-    background: white; border: 1px solid var(--border); border-radius: 12px;
-    padding: 14px; margin-bottom: 12px;
-  }
-  .card h2 { margin: 0 0 4px; font-size: 15px; }
-  .row { display: flex; justify-content: space-between; align-items: center; }
-  .stat-big { font-size: 30px; font-weight: 800; color: var(--river); line-height: 1; }
-  .stat-label { font-size: 11.5px; color: var(--muted); margin-top: 4px; }
+  /* ---------- Login ---------- */
+  .login-wrap{flex:1; display:flex; align-items:center; justify-content:center; padding:24px;}
+  .login-card{background:var(--paper); border:1px solid var(--line); border-radius:14px; padding:32px 28px; max-width:380px; width:100%; box-shadow:0 8px 24px rgba(28,58,74,0.08);}
+  .login-card h1{font-size:26px; margin-bottom:4px;}
+  .login-card p.sub{color:var(--text-soft); margin:0 0 24px; font-size:14px;}
+  .field{margin-bottom:14px;}
+  .field label{display:block; font-size:12px; font-weight:600; color:var(--text-soft); margin-bottom:6px; text-transform:uppercase; letter-spacing:.04em;}
+  .field input{width:100%; padding:11px 12px; border:1px solid var(--line); border-radius:8px; font-size:15px; background:var(--parchment);}
+  .field input:focus{outline:2px solid var(--ink-light); outline-offset:1px;}
+  .btn{width:100%; padding:12px; border:none; border-radius:8px; background:var(--ink); color:#fff; font-size:15px; font-weight:600; cursor:pointer;}
+  .btn:active{background:var(--ink-light);}
+  .err-msg{background:var(--rust-bg); color:var(--rust); border-radius:8px; padding:10px 12px; font-size:13px; margin-bottom:14px; border:1px solid var(--rust);}
 
-  .stage-bar { display: flex; gap: 3px; margin: 10px 0 6px; }
-  .stage-seg { flex: 1; height: 6px; border-radius: 3px; background: var(--border); }
-  .stage-seg.done { background: var(--verified); }
-  .stage-seg.current { background: var(--river); }
+  /* ---------- Shell ---------- */
+  header.top{background:var(--ink); color:#fff; padding:16px 18px; display:flex; align-items:center; justify-content:space-between;}
+  header.top h1{color:#fff; font-size:19px;}
+  header.top .block{font-size:12px; opacity:.75; font-family:'JetBrains Mono',monospace;}
+  main{flex:1; padding:16px; padding-bottom:88px; max-width:720px; margin:0 auto; width:100%;}
+  nav.tabs{position:fixed; bottom:0; left:0; right:0; background:var(--paper); border-top:1px solid var(--line); display:flex; padding:6px 6px calc(6px + env(safe-area-inset-bottom));}
+  nav.tabs button{flex:1; background:none; border:none; padding:10px 4px; font-size:12px; font-weight:600; color:var(--text-soft); border-radius:8px;}
+  nav.tabs button.active{color:var(--ink); background:var(--amber-bg);}
 
-  .pill {
-    display: inline-flex; align-items: center; gap: 4px;
-    font-size: 10.5px; font-weight: 700; padding: 3px 8px; border-radius: 20px;
-    text-transform: uppercase; letter-spacing: 0.3px;
-  }
-  .pill.verified { background: var(--verified-bg); color: var(--verified); }
-  .pill.unverified { background: var(--unverified-bg); color: var(--unverified); }
-  .pill.secondary { background: var(--secondary-bg); color: var(--secondary); }
-  .pill.status-blocked { background: #F5E0DE; color: #A2392F; }
-  .pill.status-progress { background: #FBF0D9; color: #92701A; }
-  .pill.status-done { background: var(--verified-bg); color: var(--verified); }
-  .pill.status-notstarted { background: #ECE9E2; color: var(--muted); }
+  /* ---------- Dashboard ---------- */
+  .countdown{background:var(--ink); color:#fff; border-radius:14px; padding:20px; margin-bottom:18px; text-align:center;}
+  .countdown .num{font-family:'Fraunces',serif; font-size:44px; font-weight:700; line-height:1;}
+  .countdown .lbl{font-size:13px; opacity:.8; margin-top:4px;}
+  .stagebar{display:flex; gap:4px; margin-bottom:6px;}
+  .stagebar .seg{flex:1; height:8px; border-radius:4px; background:var(--line);}
+  .seg.completed{background:var(--green);}
+  .seg.to_be_confirmed{background:var(--ochre);}
+  .seg.to_be_completed{background:var(--rust);}
+  .stage-caption{font-size:12px; color:var(--text-soft); margin-bottom:20px;}
+  .card{background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:14px;}
+  .card h3{font-size:15px; margin-bottom:10px;}
+  .task-row{display:flex; align-items:center; gap:10px; padding:8px 0; border-top:1px solid var(--line);}
+  .task-row:first-child{border-top:none;}
+  .dot{width:9px; height:9px; border-radius:50%; flex-shrink:0;}
+  .dot.open{background:var(--rust);}
+  .dot.in_progress{background:var(--ochre);}
+  .dot.done{background:var(--green);}
+  .dot.blocked{background:#8a8a86;}
+  .task-title{font-size:14px; flex:1;}
 
-  .task-item, .ev-item {
-    border-bottom: 1px solid var(--border); padding: 12px 0;
-  }
-  .task-item:last-child, .ev-item:last-child { border-bottom: none; }
-  .task-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-  .task-meta { font-size: 12px; color: var(--muted); margin-top: 4px; }
-  .task-notes { font-size: 12px; color: var(--muted); margin-top: 6px; font-style: italic; }
+  /* ---------- Tasks page ---------- */
+  .task-card{background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:10px; display:flex; gap:12px; align-items:flex-start;}
+  .status-pill{font-size:11px; font-weight:600; padding:3px 9px; border-radius:99px; white-space:nowrap; text-transform:uppercase; letter-spacing:.03em;}
+  .status-pill.open{background:var(--rust-bg); color:var(--rust);}
+  .status-pill.in_progress{background:var(--amber-bg); color:var(--ochre-dark);}
+  .status-pill.done{background:var(--green-bg); color:var(--green);}
+  .status-pill.blocked{background:#eaeaea; color:#555;}
+  .task-body h4{margin:0 0 4px; font-size:14.5px; color:var(--text);}
+  .task-body p{margin:0; font-size:13px; color:var(--text-soft);}
+  .task-due{font-size:11px; color:var(--text-soft); margin-top:6px;}
+  .tap-hint{font-size:10px; color:var(--text-soft); margin-top:2px;}
 
-  .section-title {
-    font-size: 12.5px; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.5px; color: var(--muted); margin: 18px 0 8px;
-  }
-  .empty { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 13.5px; }
-  .citation-tag {
-    font-family: ui-monospace, "SF Mono", Menlo, monospace;
-    font-size: 11px; background: var(--stone); padding: 2px 6px; border-radius: 5px;
-    color: var(--river); display: inline-block; margin-top: 6px;
-  }
-  .claim-list { margin-top: 8px; padding-left: 0; list-style: none; }
-  .claim-list li {
-    font-size: 12.5px; padding: 6px 0 6px 10px; border-left: 2px solid var(--border);
-    margin-bottom: 4px; color: var(--ink);
-  }
-  .claim-list li.superseded { color: var(--muted); text-decoration: line-through; }
-  .loading, .error { text-align: center; padding: 30px; font-size: 13px; color: var(--muted); }
-  .error { color: var(--unverified); }
-  .upload-card { border: 1px dashed var(--border); border-radius: 12px; padding: 14px; margin-bottom: 14px; background: var(--stone); }
-  .upload-card select, .upload-card input[type="text"] {
-    width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border);
-    font-size: 13px; margin-bottom: 8px; background: white; font-family: inherit;
-  }
-  .upload-btn {
-    width: 100%; padding: 10px; border-radius: 8px; border: none;
-    background: var(--river); color: white; font-weight: 700; font-size: 13px; cursor: pointer;
-  }
-  .upload-btn:disabled { opacity: 0.5; }
-  .file-link { font-size: 11.5px; color: var(--river); display: inline-block; margin-top: 6px; text-decoration: underline; }
+  /* ---------- Evidence Library ---------- */
+  .ev-card{background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:12px;}
+  .ev-card h4{font-size:14.5px; margin:0 0 6px; color:var(--text);}
+  .ev-card p.desc{font-size:13px; color:var(--text-soft); margin:0 0 10px;}
+  .claim{border-left:3px solid var(--line); padding:8px 0 8px 12px; margin-top:8px;}
+  .claim p{margin:0 0 6px; font-size:13.5px; line-height:1.45;}
+  .citerow{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+  .citetag{font-family:'JetBrains Mono',monospace; font-size:11.5px; background:var(--ink); color:#fff; padding:3px 8px; border-radius:6px;}
+  .verify-pill{font-size:10.5px; font-weight:600; padding:2px 8px; border-radius:99px; display:inline-flex; align-items:center; gap:5px;}
+  .verify-pill.primary_source_read{background:var(--green-bg); color:var(--green);}
+  .verify-pill.secondary_summary{background:var(--amber-bg); color:var(--ochre-dark);}
+  .verify-pill.ai_generated_unverified{background:var(--rust-bg); color:var(--rust);}
+  .verify-pill .vdot{width:6px; height:6px; border-radius:50%; display:inline-block;}
+  .verify-pill.primary_source_read .vdot{background:var(--green);}
+  .verify-pill.secondary_summary .vdot{background:var(--ochre);}
+  .verify-pill.ai_generated_unverified .vdot{background:var(--rust);}
+
+  .empty{text-align:center; color:var(--text-soft); font-size:14px; padding:40px 20px;}
+  .loading{text-align:center; color:var(--text-soft); padding:40px 0; font-size:14px;}
+  .crash{padding:32px; text-align:center;}
+  .crash h2{color:var(--rust);}
+  .crash pre{white-space:pre-wrap; text-align:left; background:#fff; border:1px solid var(--line); border-radius:8px; padding:12px; font-size:11px; color:var(--text-soft);}
+  .offline-banner{background:var(--ochre); color:var(--ochre-dark); font-weight:600; text-align:center; font-size:12.5px; padding:6px;}
 </style>
 </head>
 <body>
 <div id="root"></div>
 
 <script type="text/babel" data-presets="react">
-const { useState, useEffect } = React;
+const { useState, useEffect, useCallback, useRef } = React;
 
-// ---- CONFIG ----
-// Replace with your Supabase project values before deploying.
-const SUPABASE_URL = "https://kbfiozndfkwkoulebqg.supabase.co";
-const SUPABASE_KEY = "sb_publishable_uWCrWVaNGEBUysynxujlxQ_xvEmwAkG";
+// ============================================================
+// CONFIG — replace before deploying
+// ============================================================
+const SUPABASE_URL = "https://YOUR-PROJECT-REF.supabase.co";
+const SUPABASE_KEY = "sb_publishable_YOUR_KEY_HERE";
 const APPLICATION_ID = "11111111-1111-1111-1111-111111111111"; // Kaitangata 5E seed row
 
-// ---- RAW FETCH HELPERS (no supabase-js — mobile-safe per lessons learned) ----
-async function sbGet(table, query) {
-  const url = `${SUPABASE_URL}/rest/v1/${table}?${query}`;
-  const res = await fetch(url, {
-    headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`,
-    },
-  });
-  if (!res.ok) throw new Error(`Fetch failed: ${table}`);
-  return res.json();
+// ============================================================
+// Lesson 6: ErrorBoundary — blank screen = invisible crash without it
+// ============================================================
+class ErrorBoundary extends React.Component {
+  constructor(props){ super(props); this.state = { error: null }; }
+  static getDerivedStateFromError(error){ return { error }; }
+  render(){
+    if (this.state.error) {
+      return (
+        <div className="crash">
+          <h2>Something went wrong</h2>
+          <p>The app hit an error and stopped safely instead of showing a blank screen.</p>
+          <pre>{String(this.state.error && this.state.error.message || this.state.error)}</pre>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
 }
 
-async function sbPatch(table, id, body) {
-  const url = `${SUPABASE_URL}/rest/v1/${table}?id=eq.${id}`;
-  const res = await fetch(url, {
-    method: "PATCH",
-    headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`,
-      "Content-Type": "application/json",
-      Prefer: "return=representation",
-    },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error(`Update failed: ${table}`);
-  return res.json();
+// ============================================================
+// Lesson 26: translate raw auth/API errors into human guidance
+// ============================================================
+function humanizeError(raw) {
+  const msg = (raw || "").toLowerCase();
+  if (msg.includes("invalid login credentials"))
+    return "Email or password not recognised — check for capital letters, passwords are case sensitive.";
+  if (msg.includes("failed to fetch") || msg.includes("networkerror"))
+    return "Could not reach the server. Check your connection, or the project may be paused.";
+  if (msg.includes("jwt") && msg.includes("expired"))
+    return "Your session expired — refreshing automatically. Try again in a moment.";
+  return raw || "Something unexpected happened.";
 }
 
-const STORAGE_BUCKET = "cp-evidence-files";
+// ============================================================
+// Session handling — localStorage persistence (Lesson 5)
+// ============================================================
+function loadSession() {
+  try {
+    const raw = localStorage.getItem("cp_session");
+    return raw ? JSON.parse(raw) : null;
+  } catch (e) { return null; }
+}
+function saveSession(session) {
+  if (session) localStorage.setItem("cp_session", JSON.stringify(session));
+  else localStorage.removeItem("cp_session");
+}
 
-async function sbUploadFile(file, applicationId) {
-  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-  const path = `${applicationId}/${Date.now()}-${safeName}`;
-  const url = `${SUPABASE_URL}/storage/v1/object/${STORAGE_BUCKET}/${path}`;
-  const res = await fetch(url, {
+// ============================================================
+// Lesson 21: auto session refresh — catch 401, refresh token, retry once.
+// Wraps every authenticated Supabase REST call.
+// ============================================================
+async function refreshSession(session) {
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
     method: "POST",
-    headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`,
-      "Content-Type": file.type || "application/octet-stream",
-    },
-    body: file,
+    headers: { "Content-Type": "application/json", "apikey": SUPABASE_KEY },
+    body: JSON.stringify({ refresh_token: session.refresh_token }),
   });
-  if (!res.ok) throw new Error("Upload failed");
-  return `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET}/${path}`;
+  if (!res.ok) throw new Error("Session refresh failed — please log in again.");
+  const data = await res.json();
+  const newSession = {
+    access_token: data.access_token,
+    refresh_token: data.refresh_token,
+    expires_at: Date.now() + (data.expires_in || 3600) * 1000,
+  };
+  saveSession(newSession);
+  return newSession;
 }
 
-async function sbInsert(table, body) {
-  const url = `${SUPABASE_URL}/rest/v1/${table}`;
-  const res = await fetch(url, {
-    method: "POST",
+async function apiFetch(session, path, options = {}, setSession) {
+  const doFetch = (tok) => fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...options,
     headers: {
-      apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`,
       "Content-Type": "application/json",
-      Prefer: "return=representation",
+      "apikey": SUPABASE_KEY,
+      "Authorization": `Bearer ${tok}`,
+      "Prefer": options.prefer || "return=representation",
+      ...(options.headers || {}),
     },
-    body: JSON.stringify(body),
   });
-  if (!res.ok) throw new Error(`Insert failed: ${table}`);
+
+  let res = await doFetch(session.access_token);
+  if (res.status === 401) {
+    // Lesson 21 in action: refresh once, retry once, then give up cleanly.
+    const refreshed = await refreshSession(session);
+    setSession(refreshed);
+    res = await doFetch(refreshed.access_token);
+  }
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    // Lesson 19: surface e.message-style detail instead of a generic failure.
+    throw new Error(`Request failed (${res.status}): ${text || res.statusText}`);
+  }
   return res.json();
 }
 
-const STAGE_NAMES = [
-  "Assess Feasibility", "Ownership Analysis", "Professional Team",
-  "Planning Review", "Survey", "Evidence Preparation",
-  "Court Application", "Court Hearing", "Orders Issued", "Implementation",
-];
-
-function daysUntil(dateStr) {
-  if (!dateStr) return null;
-  const diff = new Date(dateStr) - new Date();
-  return Math.ceil(diff / (1000 * 60 * 60 * 24));
-}
-
-function VerificationPill({ status }) {
-  const map = {
-    primary_source_read: { cls: "verified", label: "Primary Source" },
-    secondary_summary: { cls: "secondary", label: "Secondary Summary" },
-    ai_generated_unverified: { cls: "unverified", label: "Unverified" },
-  };
-  const m = map[status] || map.ai_generated_unverified;
-  return <span className={`pill ${m.cls}`}>{m.label}</span>;
-}
-
-function StatusPill({ status }) {
-  const map = {
-    not_started: { cls: "status-notstarted", label: "Not Started" },
-    in_progress: { cls: "status-progress", label: "In Progress" },
-    blocked: { cls: "status-blocked", label: "Blocked" },
-    complete: { cls: "status-done", label: "Complete" },
-  };
-  const m = map[status] || map.not_started;
-  return <span className={`pill ${m.cls}`}>{m.label}</span>;
-}
-
-function Dashboard({ app, tasks }) {
-  if (!app) return <div className="empty">No application loaded.</div>;
-  const days = daysUntil(app.hearing_date);
-  const outstanding = tasks.filter(t => t.status !== "complete");
-  const nextThree = outstanding.slice(0, 3);
-  const stageIdx = app.current_stage;
-
-  return (
-    <div>
-      <div className="card">
-        <div className="row">
-          <div>
-            <h2>{app.block_name}</h2>
-            <div className="stat-label">{app.applicant_name}</div>
-          </div>
-        </div>
-        <div className="stage-bar">
-          {STAGE_NAMES.map((_, i) => (
-            <div key={i} className={`stage-seg ${i + 1 < stageIdx ? "done" : i + 1 === stageIdx ? "current" : ""}`} />
-          ))}
-        </div>
-        <div className="stat-label">Stage {stageIdx} of 10 — {STAGE_NAMES[stageIdx - 1]}</div>
-      </div>
-
-      {days !== null && (
-        <div className="card">
-          <div className="stat-big">{days >= 0 ? days : 0}</div>
-          <div className="stat-label">
-            {days >= 0 ? "days until hearing" : "hearing date has passed"}
-            {app.hearing_date ? ` — ${new Date(app.hearing_date).toLocaleDateString("en-NZ", { day: "numeric", month: "long", year: "numeric" })}` : ""}
-          </div>
-        </div>
-      )}
-
-      <div className="section-title">Next Steps ({outstanding.length} outstanding)</div>
-      {nextThree.length === 0 ? (
-        <div className="card empty">All tasks complete.</div>
-      ) : (
-        <div className="card">
-          {nextThree.map(t => (
-            <div className="task-item" key={t.id}>
-              <div className="task-title">{t.title}</div>
-              <div className="task-meta"><StatusPill status={t.status} /></div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function Tasks({ tasks, onUpdateStatus }) {
-  if (tasks.length === 0) return <div className="empty">No tasks yet.</div>;
-  const cycle = { not_started: "in_progress", in_progress: "complete", complete: "not_started", blocked: "in_progress" };
-
-  return (
-    <div className="card">
-      {tasks.map(t => (
-        <div className="task-item" key={t.id}>
-          <div className="row">
-            <div style={{ flex: 1 }}>
-              <div className="task-title">{t.title}</div>
-              <div className="task-meta">
-                <StatusPill status={t.status} />
-                {t.service_method && <span style={{ marginLeft: 6 }}>via {t.service_method}</span>}
-              </div>
-              {t.notes && <div className="task-notes">{t.notes}</div>}
-            </div>
-          </div>
-          <button
-            onClick={() => onUpdateStatus(t.id, cycle[t.status] || "in_progress")}
-            style={{ marginTop: 8, fontSize: 11, padding: "5px 10px", borderRadius: 8, border: "1px solid var(--border)", background: "var(--stone)", cursor: "pointer" }}
-          >
-            Mark as {cycle[t.status] === "complete" ? "Complete" : cycle[t.status] === "in_progress" ? "In Progress" : "Not Started"}
-          </button>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function EvidenceUploadForm({ applicationId, onUploaded }) {
-  const [category, setCategory] = useState("court_minute");
-  const [citation, setCitation] = useState("");
-  const [file, setFile] = useState(null);
-  const [busy, setBusy] = useState(false);
+// ============================================================
+// Login screen
+// ============================================================
+function Login({ onLoggedIn }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [err, setErr] = useState(null);
+  const [busy, setBusy] = useState(false);
 
-  async function handleSubmit() {
-    if (!file) { setErr("Choose a file first."); return; }
-    setBusy(true);
-    setErr(null);
+  async function submit(e) {
+    e.preventDefault();
+    setBusy(true); setErr(null);
     try {
-      const fileUrl = await sbUploadFile(file, applicationId);
-      await sbInsert("cp_evidence", {
-        application_id: applicationId,
-        category,
-        file_url: fileUrl,
-        source_citation: citation || null,
-        verification_status: "ai_generated_unverified",
+      const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "apikey": SUPABASE_KEY },
+        body: JSON.stringify({ email, password }),
       });
-      setCitation("");
-      setFile(null);
-      onUploaded();
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error_description || data.msg || "Invalid login credentials");
+      const session = {
+        access_token: data.access_token,
+        refresh_token: data.refresh_token,
+        expires_at: Date.now() + (data.expires_in || 3600) * 1000,
+      };
+      saveSession(session);
+      onLoggedIn(session);
     } catch (e) {
-      setErr(e.message || "Upload failed.");
+      setErr(humanizeError(e.message));
     } finally {
       setBusy(false);
     }
   }
 
   return (
-    <div className="upload-card">
-      <select value={category} onChange={e => setCategory(e.target.value)}>
-        <option value="court_minute">Court Minute</option>
-        <option value="court_order">Court Order</option>
-        <option value="correspondence">Correspondence</option>
-        <option value="photo">Photo</option>
-        <option value="other">Other</option>
-      </select>
-      <input
-        type="text"
-        placeholder="Citation (e.g. 149 AOT 48-50) — optional"
-        value={citation}
-        onChange={e => setCitation(e.target.value)}
-      />
-      <input
-        type="file"
-        onChange={e => setFile(e.target.files[0] || null)}
-        style={{ marginBottom: 8, fontSize: 12 }}
-      />
-      {err && <div style={{ color: "var(--unverified)", fontSize: 12, marginBottom: 8 }}>{err}</div>}
-      <button className="upload-btn" onClick={handleSubmit} disabled={busy}>
-        {busy ? "Uploading..." : "Upload Evidence"}
-      </button>
+    <div className="login-wrap">
+      <form className="login-card" onSubmit={submit}>
+        <h1>Combined Partition OS</h1>
+        <p className="sub">Kaitangata 5E — citation-first case tracker</p>
+        {err && <div className="err-msg">{err}</div>}
+        <div className="field">
+          <label>Email</label>
+          <input type="email" value={email} onChange={e => setEmail(e.target.value)} required autoComplete="username" />
+        </div>
+        <div className="field">
+          <label>Password</label>
+          <input type="password" value={password} onChange={e => setPassword(e.target.value)} required autoComplete="current-password" />
+        </div>
+        <button className="btn" disabled={busy}>{busy ? "Signing in…" : "Sign in"}</button>
+      </form>
     </div>
   );
 }
 
-function EvidenceLibrary({ applicationId, evidence, claims, onUploaded }) {
+// ============================================================
+// Dashboard
+// ============================================================
+function Dashboard({ app, stages, tasks }) {
+  const daysLeft = app ? Math.ceil((new Date(app.hearing_date) - new Date()) / 86400000) : null;
+  const openTasks = tasks.filter(t => t.status !== "done").slice(0, 3);
+
   return (
     <div>
-      <EvidenceUploadForm applicationId={applicationId} onUploaded={onUploaded} />
-      {evidence.length === 0 ? (
-        <div className="empty">No evidence records yet.</div>
-      ) : (
-        evidence.map(ev => {
-          const evClaims = claims.filter(c => c.evidence_id === ev.id);
-          return (
-            <div className="card ev-item" key={ev.id}>
-              <div className="row">
-                <div style={{ fontWeight: 700, fontSize: 13, textTransform: "capitalize" }}>
-                  {(ev.category || "document").replace(/_/g, " ")}
-                </div>
-                <VerificationPill status={ev.verification_status} />
-              </div>
-              {ev.source_citation && <div className="citation-tag">{ev.source_citation}</div>}
-              {ev.file_url && (
-                <div>
-                  <a className="file-link" href={ev.file_url} target="_blank" rel="noreferrer">View file</a>
-                </div>
-              )}
-              {evClaims.length > 0 && (
-                <ul className="claim-list">
-                  {evClaims.map(c => (
-                    <li key={c.id} className={c.superseded_by ? "superseded" : ""}>
-                      {c.claim_text}
-                      {c.page_reference && <span style={{ color: "var(--muted)" }}> ({c.page_reference})</span>}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          );
-        })
-      )}
+      <div className="countdown">
+        <div className="num">{daysLeft !== null ? daysLeft : "–"}</div>
+        <div className="lbl">days until hearing {app ? `· ${app.hearing_date}` : ""}</div>
+      </div>
+
+      <div className="stagebar">
+        {stages.map(s => <div key={s.id} className={`seg ${s.status}`} title={s.title}></div>)}
+      </div>
+      <div className="stage-caption">
+        {stages.filter(s => s.status === "completed").length} of {stages.length} standing-direction items complete
+      </div>
+
+      <div className="card">
+        <h3>Next up</h3>
+        {openTasks.length === 0 && <div className="empty">Nothing open — nicely done.</div>}
+        {openTasks.map(t => (
+          <div className="task-row" key={t.id}>
+            <span className={`dot ${t.status}`}></span>
+            <span className="task-title">{t.title}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
+// ============================================================
+// Tasks — tap to cycle status
+// ============================================================
+const TASK_CYCLE = ["open", "in_progress", "done", "blocked"];
+
+function Tasks({ tasks, onCycle }) {
+  if (!tasks.length) return <div className="empty">No tasks yet.</div>;
+  return (
+    <div>
+      {tasks.map(t => (
+        <div className="task-card" key={t.id} onClick={() => onCycle(t)}>
+          <span className={`status-pill ${t.status}`}>{t.status.replace("_"," ")}</span>
+          <div className="task-body">
+            <h4>{t.title}</h4>
+            {t.detail && <p>{t.detail}</p>}
+            {t.due_date && <div className="task-due">Due {t.due_date}</div>}
+            <div className="tap-hint">Tap to change status</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ============================================================
+// Evidence Library — the core differentiator
+// ============================================================
+function verifyLabel(status){
+  if (status === "primary_source_read") return "Primary source read";
+  if (status === "secondary_summary") return "Secondary summary";
+  return "AI-generated, unverified";
+}
+
+function Evidence({ evidence, claims }) {
+  if (!evidence.length) return <div className="empty">No evidence records yet.</div>;
+  return (
+    <div>
+      {evidence.map(ev => {
+        const linkedClaims = claims.filter(c => c.evidence_id === ev.id);
+        return (
+          <div className="ev-card" key={ev.id}>
+            <h4>{ev.title}</h4>
+            {ev.description && <p className="desc">{ev.description}</p>}
+            {linkedClaims.map(c => (
+              <div className="claim" key={c.id}>
+                <p>{c.claim_text}</p>
+                <div className="citerow">
+                  <span className="citetag">{c.page_reference}</span>
+                  <span className={`verify-pill ${c.verification_status}`}>
+                    <span className="vdot"></span>{verifyLabel(c.verification_status)}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ============================================================
+// App shell
+// ============================================================
 function App() {
+  const [session, setSessionState] = useState(loadSession());
   const [tab, setTab] = useState("dashboard");
   const [app, setApp] = useState(null);
+  const [stages, setStages] = useState([]);
   const [tasks, setTasks] = useState([]);
   const [evidence, setEvidence] = useState([]);
   const [claims, setClaims] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [online, setOnline] = useState(navigator.onLine);
 
-  async function loadAll() {
-    setLoading(true);
-    setError(null);
+  const setSession = useCallback((s) => { setSessionState(s); saveSession(s); }, []);
+
+  useEffect(() => {
+    const on = () => setOnline(true), off = () => setOnline(false);
+    window.addEventListener("online", on);
+    window.addEventListener("offline", off);
+    return () => { window.removeEventListener("online", on); window.removeEventListener("offline", off); };
+  }, []);
+
+  const loadData = useCallback(async () => {
+    if (!session) return;
+    setLoading(true); setError(null);
     try {
-      const [appRows, taskRows, evRows, claimRows] = await Promise.all([
-        sbGet("cp_applications", `id=eq.${APPLICATION_ID}`),
-        sbGet("cp_tasks", `application_id=eq.${APPLICATION_ID}&order=created_at.asc`),
-        sbGet("cp_evidence", `application_id=eq.${APPLICATION_ID}&order=uploaded_at.asc`),
-        sbGet("cp_claims", `order=created_at.asc`),
+      const [apps, st, tk, ev, cl] = await Promise.all([
+        apiFetch(session, `cp_applications?id=eq.${APPLICATION_ID}`, {}, setSession),
+        apiFetch(session, `cp_stages?application_id=eq.${APPLICATION_ID}&order=stage_order.asc`, {}, setSession),
+        apiFetch(session, `cp_tasks?application_id=eq.${APPLICATION_ID}&order=created_at.asc`, {}, setSession),
+        apiFetch(session, `cp_evidence?application_id=eq.${APPLICATION_ID}`, {}, setSession),
+        apiFetch(session, `cp_claims?application_id=eq.${APPLICATION_ID}`, {}, setSession),
       ]);
-      setApp(appRows[0] || null);
-      setTasks(taskRows);
-      setEvidence(evRows);
-      setClaims(claimRows);
+      setApp(apps[0] || null);
+      setStages(st); setTasks(tk); setEvidence(ev); setClaims(cl);
     } catch (e) {
-      setError("Load error: " + (e && e.message ? e.message : String(e)));
+      setError(humanizeError(e.message));
     } finally {
       setLoading(false);
     }
-  }
+  }, [session, setSession]);
 
-  useEffect(() => { loadAll(); }, []);
+  useEffect(() => { loadData(); }, [loadData]);
 
-  async function handleUpdateStatus(taskId, newStatus) {
-    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: newStatus } : t));
+  async function cycleTask(task) {
+    const next = TASK_CYCLE[(TASK_CYCLE.indexOf(task.status) + 1) % TASK_CYCLE.length];
+    setTasks(ts => ts.map(t => t.id === task.id ? { ...t, status: next } : t)); // optimistic
     try {
-      await sbPatch("cp_tasks", taskId, { status: newStatus });
+      await apiFetch(session, `cp_tasks?id=eq.${task.id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ status: next }),
+      }, setSession);
     } catch (e) {
-      loadAll(); // revert on failure by reloading
+      setError(humanizeError(e.message));
+      loadData(); // revert to server truth on failure
     }
   }
 
+  if (!session) return <Login onLoggedIn={setSession} />;
+
   return (
-    <div className="app">
+    <React.Fragment>
+      {!online && <div className="offline-banner">Offline — showing last loaded data</div>}
       <header className="top">
         <h1>Combined Partition OS</h1>
-        <div className="sub">{app ? app.block_name : "Loading..."}</div>
+        <span className="block mono">{app ? app.block_name : "…"}</span>
       </header>
-
-      <div className="content">
-        {loading && <div className="loading">Loading case data...</div>}
-        {error && <div className="error">{error}</div>}
-        {!loading && !error && tab === "dashboard" && <Dashboard app={app} tasks={tasks} />}
-        {!loading && !error && tab === "tasks" && <Tasks tasks={tasks} onUpdateStatus={handleUpdateStatus} />}
-        {!loading && !error && tab === "evidence" && (
-          <EvidenceLibrary
-            applicationId={APPLICATION_ID}
-            evidence={evidence}
-            claims={claims}
-            onUploaded={loadAll}
-          />
-        )}
-      </div>
-
+      <main>
+        {loading && <div className="loading">Loading…</div>}
+        {error && <div className="err-msg">{error}</div>}
+        {!loading && !error && tab === "dashboard" && <Dashboard app={app} stages={stages} tasks={tasks} />}
+        {!loading && !error && tab === "tasks" && <Tasks tasks={tasks} onCycle={cycleTask} />}
+        {!loading && !error && tab === "evidence" && <Evidence evidence={evidence} claims={claims} />}
+      </main>
       <nav className="tabs">
-        <button className={tab === "dashboard" ? "active" : ""} onClick={() => setTab("dashboard")}>
-          <span className="icon">◈</span>Dashboard
-        </button>
-        <button className={tab === "tasks" ? "active" : ""} onClick={() => setTab("tasks")}>
-          <span className="icon">☑</span>Tasks
-        </button>
-        <button className={tab === "evidence" ? "active" : ""} onClick={() => setTab("evidence")}>
-          <span className="icon">📄</span>Evidence
-        </button>
+        <button className={tab === "dashboard" ? "active" : ""} onClick={() => setTab("dashboard")}>Dashboard</button>
+        <button className={tab === "tasks" ? "active" : ""} onClick={() => setTab("tasks")}>Tasks</button>
+        <button className={tab === "evidence" ? "active" : ""} onClick={() => setTab("evidence")}>Evidence</button>
       </nav>
-    </div>
+    </React.Fragment>
   );
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+// Lesson 25: register the service worker — manifest.json alone is not a PWA
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  <ErrorBoundary><App /></ErrorBoundary>
+);
 </script>
 </body>
 </html>

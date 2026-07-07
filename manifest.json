@@ -1,0 +1,13 @@
+{
+  "name": "Combined Partition OS",
+  "short_name": "CP OS",
+  "description": "Citation-first case tracker for Māori Land Court partition applications",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F6F2E8",
+  "theme_color": "#1C3A4A",
+  "icons": [
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "192x192", "type": "image/png" }
+  ]
+}
