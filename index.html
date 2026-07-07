@@ -51,9 +51,12 @@
   .err-msg{background:var(--rust-bg); color:var(--rust); border-radius:8px; padding:10px 12px; font-size:13px; margin-bottom:14px; border:1px solid var(--rust);}
 
   /* ---------- Shell ---------- */
-  header.top{background:var(--ink); color:#fff; padding:16px 18px; display:flex; align-items:center; justify-content:space-between;}
+  header.top{background:var(--ink); color:#fff; padding:16px 18px; display:flex; align-items:center; justify-content:space-between; gap:10px;}
   header.top h1{color:#fff; font-size:19px;}
   header.top .block{font-size:12px; opacity:.75; font-family:'JetBrains Mono',monospace;}
+  header.top .right{display:flex; align-items:center; gap:12px;}
+  .logout-btn{background:rgba(255,255,255,0.12); color:#fff; border:1px solid rgba(255,255,255,0.3); border-radius:7px; padding:6px 12px; font-size:12.5px; font-weight:600;}
+  .logout-btn:active{background:rgba(255,255,255,0.22);}
   main{flex:1; padding:16px; padding-bottom:88px; max-width:720px; margin:0 auto; width:100%;}
   nav.tabs{position:fixed; bottom:0; left:0; right:0; background:var(--paper); border-top:1px solid var(--line); display:flex; padding:6px 6px calc(6px + env(safe-area-inset-bottom));}
   nav.tabs button{flex:1; background:none; border:none; padding:10px 4px; font-size:12px; font-weight:600; color:var(--text-soft); border-radius:8px;}
@@ -91,6 +94,9 @@
   .task-body p{margin:0; font-size:13px; color:var(--text-soft);}
   .task-due{font-size:11px; color:var(--text-soft); margin-top:6px;}
   .tap-hint{font-size:10px; color:var(--text-soft); margin-top:2px;}
+  .task-actions{display:flex; flex-direction:column; align-items:center; gap:6px;}
+  .done-btn{width:34px; height:34px; border-radius:50%; border:1.5px solid var(--green); background:#fff; color:var(--green); font-size:16px; font-weight:700; flex-shrink:0;}
+  .done-btn.is-done{background:var(--green); color:#fff;}
 
   /* ---------- Evidence Library ---------- */
   .ev-card{background:var(--paper); border:1px solid var(--line); border-radius:12px; padding:14px; margin-bottom:12px;}
@@ -176,6 +182,9 @@ function loadSession() {
 function saveSession(session) {
   if (session) localStorage.setItem("cp_session", JSON.stringify(session));
   else localStorage.removeItem("cp_session");
+}
+function clearSession() {
+  localStorage.removeItem("cp_session");
 }
 
 // ============================================================
@@ -320,18 +329,27 @@ function Dashboard({ app, stages, tasks }) {
 // ============================================================
 const TASK_CYCLE = ["open", "in_progress", "done", "blocked"];
 
-function Tasks({ tasks, onCycle }) {
+function Tasks({ tasks, onCycle, onToggleDone }) {
   if (!tasks.length) return <div className="empty">No tasks yet.</div>;
   return (
     <div>
       {tasks.map(t => (
-        <div className="task-card" key={t.id} onClick={() => onCycle(t)}>
-          <span className={`status-pill ${t.status}`}>{t.status.replace("_"," ")}</span>
-          <div className="task-body">
+        <div className="task-card" key={t.id}>
+          <div className="task-actions">
+            <button
+              className={`done-btn ${t.status === "done" ? "is-done" : ""}`}
+              onClick={(e) => { e.stopPropagation(); onToggleDone(t); }}
+              aria-label={t.status === "done" ? "Mark not done" : "Mark done"}
+            >
+              ✓
+            </button>
+            <span className={`status-pill ${t.status}`}>{t.status.replace("_"," ")}</span>
+          </div>
+          <div className="task-body" onClick={() => onCycle(t)}>
             <h4>{t.title}</h4>
             {t.detail && <p>{t.detail}</p>}
             {t.due_date && <div className="task-due">Due {t.due_date}</div>}
-            <div className="tap-hint">Tap to change status</div>
+            <div className="tap-hint">Tap card to cycle status · tap ✓ to mark done</div>
           </div>
         </div>
       ))}
@@ -422,11 +440,10 @@ function App() {
 
   useEffect(() => { loadData(); }, [loadData]);
 
-  async function cycleTask(task) {
-    const next = TASK_CYCLE[(TASK_CYCLE.indexOf(task.status) + 1) % TASK_CYCLE.length];
-    setTasks(ts => ts.map(t => t.id === task.id ? { ...t, status: next } : t)); // optimistic
+  async function updateTaskStatus(taskId, next) {
+    setTasks(ts => ts.map(t => t.id === taskId ? { ...t, status: next } : t)); // optimistic
     try {
-      await apiFetch(session, `cp_tasks?id=eq.${task.id}`, {
+      await apiFetch(session, `cp_tasks?id=eq.${taskId}`, {
         method: "PATCH",
         body: JSON.stringify({ status: next }),
       }, setSession);
@@ -436,6 +453,15 @@ function App() {
     }
   }
 
+  function cycleTask(task) {
+    const next = TASK_CYCLE[(TASK_CYCLE.indexOf(task.status) + 1) % TASK_CYCLE.length];
+    updateTaskStatus(task.id, next);
+  }
+
+  function toggleDoneTask(task) {
+    updateTaskStatus(task.id, task.status === "done" ? "open" : "done");
+  }
+
   if (!session) return <Login onLoggedIn={setSession} />;
 
   return (
@@ -443,13 +469,18 @@ function App() {
       {!online && <div className="offline-banner">Offline — showing last loaded data</div>}
       <header className="top">
         <h1>Combined Partition OS</h1>
-        <span className="block mono">{app ? app.block_name : "…"}</span>
+        <div className="right">
+          <span className="block mono">{app ? app.block_name : "…"}</span>
+          <button className="logout-btn" onClick={() => { clearSession(); setSessionState(null); }}>
+            Log out
+          </button>
+        </div>
       </header>
       <main>
         {loading && <div className="loading">Loading…</div>}
         {error && <div className="err-msg">{error}</div>}
         {!loading && !error && tab === "dashboard" && <Dashboard app={app} stages={stages} tasks={tasks} />}
-        {!loading && !error && tab === "tasks" && <Tasks tasks={tasks} onCycle={cycleTask} />}
+        {!loading && !error && tab === "tasks" && <Tasks tasks={tasks} onCycle={cycleTask} onToggleDone={toggleDoneTask} />}
         {!loading && !error && tab === "evidence" && <Evidence evidence={evidence} claims={claims} />}
       </main>
       <nav className="tabs">
